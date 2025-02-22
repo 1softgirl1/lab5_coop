@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include <iostream>
 using namespace std;
 
 // Конструктор по умолчанию
@@ -186,22 +187,12 @@ Matrix Matrix::InverseMatrix() {
 
     Matrix complements = CalcComplements();
     Matrix adjugate(rows_, cols_);
+    
+    adjugate = complements.Transpose();
 
-    // Транспонирование матрицы алгебраических дополнений
-    for (int i = 0; i < rows_; ++i) {
-        for (int j = 0; j < cols_; ++j) {
-            adjugate.matrix_[j][i] = complements.matrix_[i][j]; 
-        }
-    }
+    adjugate.MulNumber(1 / det);
 
-    Matrix inverse(rows_, cols_);
-    for (int i = 0; i < rows_; ++i) {
-        for (int j = 0; j < cols_; ++j) {
-            inverse.matrix_[i][j] = adjugate.matrix_[i][j] / det;
-        }
-    }
-
-    return inverse;
+    return adjugate;
 }
 
     
@@ -278,17 +269,11 @@ Matrix& Matrix::operator*=(double scalar) {
 
 double& Matrix::operator()(int i, int j) {
     if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
-        throw std::out_of_range("Индекс за пределами матрицы");
+        throw out_of_range("Индекс за пределами матрицы");
     }
     return matrix_[i][j];
 }
 
-const double& Matrix::operator()(int i, int j) const {
-    if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
-        throw std::out_of_range("Индекс за пределами матрицы");
-    }
-    return matrix_[i][j];
-}
 
 void Matrix::print() {
     for (int i = 0; i < rows_; ++i) {
