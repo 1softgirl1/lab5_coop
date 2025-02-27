@@ -104,7 +104,7 @@ int main() {
     if (SUCCEEDED(hr)) {
         cout << "Клиент: указатель на IY получен успешно" << endl;
         pIYfromIX->Fy();
-    } 
+    }
     else {
         cout << "Клиент: Невозможно получить указатель на IY через IX" << endl;
     };
