@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unknwn.h>
 #include "objbase.h"
+#include <cassert>
 
 using namespace std;
 
@@ -60,6 +61,78 @@ IUnknown* CreateInstance() {
     pI->AddRef();
     return pI;
 }
+
+BOOL SameComponents(IX* pIX, IY* pIY)
+{
+    IUnknown* pI1 = NULL;
+    IUnknown* pI2 = NULL;
+
+    // Получить указатель на IUnknown через pIX
+    pIX->QueryInterface(IID_IUnknown1, (void**)&pI1);
+
+    // Получить указатель на IUnknown через pIY
+    pIY->QueryInterface(IID_IUnknown1, (void**)&pI2);
+
+    // Сравнить полученные указатели
+    return pI1 == pI2;
+}
+
+void f(IX* pIX)
+{
+    IX* pIX2 = NULL;
+
+    // Запросить IX через IX
+    HRESULT hr = pIX->QueryInterface(IID_IX, (void**)&pIX2);
+
+    assert(SUCCEEDED(hr)); // Запрос должен быть успешным
+}
+
+void f2(IX* pIX)
+{
+    HRESULT hr;
+
+    IX* pIX2 = NULL;
+    IY* pIY = NULL;
+
+    // Получить IY через IX
+    hr = pIX->QueryInterface(IID_IY, (void**)&pIY);
+
+    if (SUCCEEDED(hr))
+    {
+        // Получить IX через IY
+        hr = pIY->QueryInterface(IID_IX, (void**)&pIX2);
+
+        // QueryInterface должна отработать успешно
+        assert(SUCCEEDED(hr));
+    }
+}
+
+void f3(IX* pIX)
+{
+    HRESULT hr;
+    IY* pIY = NULL;
+
+    // Запросить IY у IX
+    hr = pIX->QueryInterface(IID_IY, (void**)&pIY);
+
+    if (SUCCEEDED(hr))
+    {
+        IZ* pIZ = NULL;
+
+        // Запросить IZ и IY
+        hr = pIY->QueryInterface(IID_IZ, (void**)&pIZ);
+
+        if (SUCCEEDED(hr))
+        {
+            // Запросить IZ у IX
+            hr = pIX->QueryInterface(IID_IZ, (void**)&pIZ);
+            assert(SUCCEEDED(hr)); // Это должно работать
+        }
+    }
+}
+
+
+
 
 
 // Клиент
@@ -121,6 +194,46 @@ int main() {
             cout << "HET" << endl;
         }
     };
+  
+
+    // Тест функции f
+    cout << "\nТест f()" << endl;
+    try {
+        f(pIX);
+        cout << "f() выполнена успешно" << endl;
+    }
+    catch (...) {
+        cout << "Ошибка при выполнении f()" << endl;
+    }
+
+    // Тест функции f2
+    cout << "\nТест f2()" << endl;
+    try {
+        f2(pIX);
+        cout << "f2() выполнена успешно" << endl;
+    }
+    catch (...) {
+        cout << "Ошибка при выполнении f2()" << endl;
+    }
+
+    // Тест функции f3
+    cout << "\nТест f3()" << endl;
+    try {
+        f3(pIX);
+        cout << "f3() выполнена успешно" << endl;
+    }
+    catch (...) {
+        cout << "Ошибка при выполнении f3()" << endl;
+    }
+
+    // Тест функции SameComponents
+    cout << "\nТест SameComponents()" << endl;
+    bool result = SameComponents(pIX, pIY);
+    cout << "Результат сравнения компонентов: " << (result ? "указатели совпадают" : "указатели различаются") << endl;
+
+    // Добавьте очистку памяти после тестов
+    if (pIX != NULL) pIX->Release();
+    if (pIY != NULL) pIY->Release();
 
     // Удалить компонент
     delete pIUnkonwn;
