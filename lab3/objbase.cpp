@@ -97,7 +97,7 @@ int main() {
     }
     else {
         cout << "Client: Can not get interface IZ" << endl;
-    }
+    }  
     cout << "\nКлиент: Получить указатель на IY через IX" << endl;
     IY* pIYfromIX = NULL;
     hr = pIX->QueryInterface(IID_IY, (void**)&pIYfromIX);

@@ -9,7 +9,7 @@ extern const IID IID_IX;
 extern const IID IID_IY;
 extern const IID IID_IZ;
 extern const IID IID_IUnknown1;
-
+  
 // определение IID
 // {32bb8320-b41b-11cf-a6bb-0080c7b2d682}
 const IID IID_IX =
